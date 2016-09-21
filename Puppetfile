@@ -77,7 +77,7 @@ mod 'octavia',
   :ref => 'master'
 
 mod 'openstack_integration',
-  :git => 'https://git.openstack.org/openstack/puppet-openstack-integration',
+  :git => 'https://github.com/infn-bari-school/puppet-openstack-integration.git',
   :ref => 'stable/mitaka'
 
 mod 'openstack_extras',
