@@ -94,6 +94,7 @@ class openstack_integration::nova (
     vnc_enabled                 => true,
     instance_usage_audit        => true,
     instance_usage_audit_period => 'hour',
+    vncproxy_host => $::ipaddress_eth0,
   }
   class { '::nova::compute::libvirt':
     libvirt_virt_type => $libvirt_virt_type,
