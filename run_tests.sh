@@ -19,6 +19,8 @@ export MANAGE_PUPPET_MODULES=${MANAGE_PUPPET_MODULES:-true}
 export MANAGE_REPOS=${MANAGE_REPOS:-true}
 export PUPPET_ARGS=${PUPPET_ARGS:-}
 export SCRIPT_DIR=$(cd `dirname $0` && pwd -P)
+export HIERA_CONFIG=${HIERA_CONFIG:-${SCRIPT_DIR}/hiera/hiera.yaml}
+export MANAGE_HIERA=${MANAGE_HIERA:-true}
 
 # NOTE(pabelanger): Setup facter to know about AFS mirror.
 if [ -f /etc/nodepool/provider ]; then
@@ -61,7 +63,11 @@ fi
 # http://docs.openstack.org/releasenotes/tempest/v12.0.0.html
 git clone -b 12.0.0 git://git.openstack.org/openstack/tempest /tmp/openstack/tempest
 
-PUPPET_ARGS="${PUPPET_ARGS} --detailed-exitcodes --color=false --test --trace"
+PUPPET_ARGS="${PUPPET_ARGS} --detailed-exitcodes --color=false --test --trace --hiera_config ${HIERA_CONFIG}"
+
+if [ "${MANAGE_HIERA}" = true ]; then
+  configure_hiera
+fi
 
 function run_puppet() {
     local manifest=$1
