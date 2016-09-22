@@ -78,6 +78,7 @@ class openstack_integration::nova (
     default_floating_pool                => 'public',
     sync_db_api                          => true,
     service_name                         => 'httpd',
+    enabled_apis                         => 'osapi_compute,metadata',
   }
   include ::apache
   class { '::nova::wsgi::apache':

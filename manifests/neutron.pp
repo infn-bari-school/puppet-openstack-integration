@@ -69,6 +69,8 @@ class openstack_integration::neutron {
     debug            => true,
     shared_secret    => 'a_big_secret',
     metadata_workers => 2,
+    metadata_ip => $::ipaddress_eth0,
+
   }
 #  class { '::neutron::agents::lbaas':
 #    debug => true,
@@ -79,6 +81,9 @@ class openstack_integration::neutron {
   class { '::neutron::agents::dhcp':
     debug => true,
     interface_driver => 'neutron.agent.linux.interface.BridgeInterfaceDriver',
+    dhcp_delete_namespaces => true,
+    enable_isolated_metadata => true,
+    enable_metadata_network => true,
   }
 
   class { '::neutron::agents::metering':
