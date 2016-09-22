@@ -30,7 +30,7 @@ class openstack_integration::neutron {
     rabbit_use_ssl        => $::openstack_integration::config::ssl,
     allow_overlapping_ips => true,
     core_plugin           => 'ml2',
-    service_plugins       => ['router', 'metering', 'firewall'],
+    service_plugins       => [ 'metering'],#MA
     debug                 => true,
     verbose               => true,
   }
@@ -45,40 +45,55 @@ class openstack_integration::neutron {
     auth_url            => $::openstack_integration::config::keystone_admin_uri,
   }
   class { '::neutron::plugins::ml2':
-    type_drivers         => ['vxlan'],
-    tenant_network_types => ['vxlan'],
-    mechanism_drivers    => ['openvswitch'],
+    type_drivers         => ['vlan'],
+    tenant_network_types => ['vlan'],
+    mechanism_drivers    => linuxbridge,
+    firewall_driver      => 'neutron.agent.linux.iptables_firewall.IptablesFirewallDriver',
+    network_vlan_ranges  => ["external:401:410"],
   }
-  class { '::neutron::agents::ml2::ovs':
-    enable_tunneling => true,
-    local_ip         => '127.0.0.1',
-    tunnel_types     => ['vxlan'],
+  class { '::neutron::agents::ml2::linuxbridge':
+    tunnel_types                => ['vlan'],
+    physical_interface_mappings => ["external:eth0"],
   }
+#  class { '::neutron::plugins::ml2':
+#    type_drivers         => ['vxlan'],
+#    tenant_network_types => ['vxlan'],
+#    mechanism_drivers    => ['openvswitch'],
+#  }
+#  class { '::neutron::agents::ml2::ovs':
+#    enable_tunneling => true,
+#    local_ip         => '127.0.0.1',
+#    tunnel_types     => ['vxlan'],
+#  }
   class { '::neutron::agents::metadata':
     debug            => true,
     shared_secret    => 'a_big_secret',
     metadata_workers => 2,
   }
-  class { '::neutron::agents::lbaas':
-    debug => true,
-  }
-  class { '::neutron::agents::l3':
-    debug => true,
-  }
+#  class { '::neutron::agents::lbaas':
+#    debug => true,
+#  }
+#  class { '::neutron::agents::l3':
+#    debug => true,
+#  }
   class { '::neutron::agents::dhcp':
     debug => true,
+    interface_driver => 'neutron.agent.linux.interface.BridgeInterfaceDriver',
   }
+
   class { '::neutron::agents::metering':
     debug => true,
+    interface_driver => 'neutron.agent.linux.interface.BridgeInterfaceDriver',
   }
+
   class { '::neutron::server::notifications':
     auth_url => $::openstack_integration::config::keystone_admin_uri,
     password => 'a_big_secret',
   }
-  class { '::neutron::services::fwaas':
-    enabled => true,
-    driver  => 'neutron_fwaas.services.firewall.drivers.linux.iptables_fwaas.IptablesFwaasDriver',
-  }
-  include ::vswitch::ovs
+#  class { '::neutron::services::fwaas':
+#    enabled => true,
+#    driver  => 'neutron_fwaas.services.firewall.drivers.linux.iptables_fwaas.IptablesFwaasDriver',
+#  }
+#  include ::vswitch::ovs
 
 }
