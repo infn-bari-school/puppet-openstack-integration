@@ -1,6 +1,6 @@
 class openstack_integration::horizon {
 
-  $vhost_params = { add_listen => false }
+  $vhost_params = { add_listen => true }
   class { '::horizon':
     secret_key         => 'big_secret',
     vhost_extra_params => $vhost_params,
