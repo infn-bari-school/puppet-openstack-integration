@@ -34,7 +34,7 @@ class openstack_integration::config (
     $ip_version  = '4'
   }
 
-  $keystone_auth_uri  = "${proto}://127.0.0.1:5000"
-  $keystone_admin_uri = "${proto}://127.0.0.1:35357"
+  $keystone_auth_uri  = "${proto}://$::ipaddress_eth0:5000"
+  $keystone_admin_uri = "${proto}://$::ipaddress_eth0:35357"
 
 }
